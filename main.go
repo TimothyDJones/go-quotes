@@ -21,9 +21,15 @@ func homePage(writer http.ResponseWriter, request *http.Request) {
 func quotes(writer http.ResponseWriter, request *http.Request) {
 	if request.Method == http.MethodPost {
 		newQuote(writer, request)
-	} else {
-		writeResponseOrPanic(writer, "Invalid request method!")
+		return
 	}
+
+	if request.Method == http.MethodGet {
+		getRandomQuote(writer)
+		return
+	}
+
+	writeResponseOrPanic(writer, "Invalid request method!")
 }
 
 func newQuote(writer http.ResponseWriter, request *http.Request) {
@@ -38,6 +44,15 @@ func newQuote(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	writeResponseOrPanic(writer, fmt.Sprintf("Quote added: \"%s\" --%s\n", quote.Quote, quote.Author))
+}
+
+func getRandomQuote(writer http.ResponseWriter) {
+	quoteStruct, err := RandomQuoteFromDatabase()
+	if err != nil {
+		writeResponseOrPanic(writer, fmt.Sprintf("Error: Unable to get quote from database!\nMessage: %s\n", err.Error()))
+	}
+
+	writeResponseOrPanic(writer, fmt.Sprintf(`{"quote": "%s", "author": "%s"}`, quoteStruct.Quote, quoteStruct.Author))
 }
 
 // Utility function to write response using http.ResponseWriter.

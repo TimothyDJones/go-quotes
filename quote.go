@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -37,4 +38,42 @@ func (quote *QuoteStruct) storeInDatabase() error {
 	_, err := ExecDB(query, nil, quote.Quote, quote.Author)
 
 	return err
+}
+
+func RandomQuoteFromDatabase() (*QuoteStruct, error) {
+	fmt.Println("In 'RandomQuoteFromDatabase'...")
+	query := "SELECT quote, author FROM quotes ORDER BY RANDOM() LIMIT 1"
+	row, err := QueryDB(query)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("In 'RandomQuoteFromDatabase' after query...")
+
+	if !row.Next() {
+		return nil, errors.New("Error: No quote found in database!")
+	}
+
+	fmt.Println("In 'RandomQuoteFromDatabase' after reading row...")
+
+	var quote string
+	err = row.Scan(&quote)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("In 'RandomQuoteFromDatabase' after scanning 'quote'...")
+
+	var author string
+	err = row.Scan(&author)
+	if err != nil {
+		return nil, err
+	}
+
+	quoteStruct := &QuoteStruct{
+		Quote: quote,
+		Author: author,	
+	}
+
+	return quoteStruct, nil
 }
