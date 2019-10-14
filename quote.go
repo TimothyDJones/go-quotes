@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -56,19 +57,17 @@ func RandomQuoteFromDatabase() (*QuoteStruct, error) {
 
 	fmt.Println("In 'RandomQuoteFromDatabase' after reading row...")
 
-	var quote string
-	err = row.Scan(&quote)
+	var (
+		quote string
+		author string
+	)
+	err = row.Scan(&quote, &author)
 	if err != nil {
 		return nil, err
 	}
+	log.Println(quote, author)
 
-	fmt.Println("In 'RandomQuoteFromDatabase' after scanning 'quote'...")
-
-	var author string
-	err = row.Scan(&author)
-	if err != nil {
-		return nil, err
-	}
+	fmt.Println("In 'RandomQuoteFromDatabase' after scanning 'quote' and ''author'...")
 
 	quoteStruct := &QuoteStruct{
 		Quote: quote,
