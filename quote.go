@@ -42,20 +42,16 @@ func (quote *QuoteStruct) storeInDatabase() error {
 }
 
 func RandomQuoteFromDatabase() (*QuoteStruct, error) {
-	fmt.Println("In 'RandomQuoteFromDatabase'...")
+
 	query := "SELECT quote, author FROM quotes ORDER BY RANDOM() LIMIT 1"
 	row, err := QueryDB(query)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("In 'RandomQuoteFromDatabase' after query...")
-
 	if !row.Next() {
 		return nil, errors.New("Error: No quote found in database!")
 	}
-
-	fmt.Println("In 'RandomQuoteFromDatabase' after reading row...")
 
 	var (
 		quote string
@@ -66,8 +62,6 @@ func RandomQuoteFromDatabase() (*QuoteStruct, error) {
 		return nil, err
 	}
 	log.Println(quote, author)
-
-	fmt.Println("In 'RandomQuoteFromDatabase' after scanning 'quote' and ''author'...")
 
 	quoteStruct := &QuoteStruct{
 		Quote: quote,
