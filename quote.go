@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -69,4 +68,25 @@ func RandomQuoteFromDatabase() (*QuoteStruct, error) {
 	}
 
 	return quoteStruct, nil
+}
+
+func GetQuoteCountFromDatabase() (int, error) {
+	query := "SELECT COUNT(1) FROM quotes"
+	row, err := QueryDB(query)
+	if err != nil {
+		return 0, err
+	}
+
+	if !row.Next() {
+		return 0, errors.New("Error: Unable to get count of quotes from database!")
+	}
+
+	var count int
+	err = row.Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	log.Println(count)
+
+	return count, nil
 }
